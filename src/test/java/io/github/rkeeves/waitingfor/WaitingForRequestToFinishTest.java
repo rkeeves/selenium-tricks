@@ -51,17 +51,17 @@ public class WaitingForRequestToFinishTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        final Filter filter = next -> {
-            return req -> {
-                if (req.getMethod().equals(HttpMethod.POST) && req.getUri().matches(TOTALLY_LEGIT_REGEX)) {
-                    countDownLatch.countDown();
-                }
-                return next.execute(req);
-            };
+        final Filter filter = next -> req -> {
+            if (req.getMethod().equals(HttpMethod.POST) && req.getUri().matches(TOTALLY_LEGIT_REGEX)) {
+                final var response = next.execute(req);
+                countDownLatch.countDown();
+                return response;
+            }
+            return next.execute(req);
         };
         final var interceptor = new NetworkInterceptor(driver, filter);
 
-        driver.navigate().to("https://www.primefaces.org/showcase-v8/ui/ajax/dropdown.xhtml");
+        driver.navigate().to("https://www.primefaces.org/showcase/ui/ajax/dropdown.xhtml");
 
         final var countrySelect = By.cssSelector("div[id$=':country']");
         final var countryPanelTrigger = new ByChained(countrySelect, By.tagName("label"));
@@ -97,7 +97,7 @@ public class WaitingForRequestToFinishTest {
         await.until(textToBe(cityPanelTrigger, city));
     }
 
-    static final String TOTALLY_LEGIT_REGEX = ".*/dropdown\\.xhtml";
+    static final String TOTALLY_LEGIT_REGEX = ".*/dropdown\\.xhtml.*";
 
     WebDriverWait await;
 
