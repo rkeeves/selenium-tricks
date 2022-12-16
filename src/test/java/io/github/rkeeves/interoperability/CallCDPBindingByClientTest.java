@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,6 +87,6 @@ public class CallCDPBindingByClientTest {
 
     @AfterAll
     static void afterAll() {
-
+        new Random().nextInt(2);
     }
 }
